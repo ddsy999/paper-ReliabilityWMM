@@ -1,0 +1,27 @@
+{
+    "id": "A84D8202",
+    "path": "~/ProjectFolder/BathtubSurvival/WWM_constant_wearout.R",
+    "project_path": "WWM_constant_wearout.R",
+    "type": "r_source",
+    "hash": "3897393851",
+    "contents": "",
+    "dirty": false,
+    "created": 1770267320208.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "0,0",
+        "scrollLine": "0"
+    },
+    "folds": "75|2|128|0|\n137|2|192|0|\n203|2|257|0|\n268|2|354|0|\n434|54|483|0|\n526|54|541|0|\n542|55|553|0|\n556|63|569|0|\n",
+    "lastKnownWriteTime": 1772626693,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1772626693625,
+    "read_only": false,
+    "read_only_alternatives": []
+}

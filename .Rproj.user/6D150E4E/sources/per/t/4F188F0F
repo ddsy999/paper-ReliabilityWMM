@@ -1,0 +1,26 @@
+{
+    "id": "4F188F0F",
+    "path": "~/ProjectFolder/BathtubSurvival/wmm_functions.R",
+    "project_path": "wmm_functions.R",
+    "type": "r_source",
+    "hash": "3271064319",
+    "contents": "",
+    "dirty": false,
+    "created": 1770263730877.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "211,0",
+        "scrollLine": "0"
+    },
+    "folds": "175|70|209|0|\n",
+    "lastKnownWriteTime": 1772620819,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1772620819969,
+    "read_only": false,
+    "read_only_alternatives": []
+}

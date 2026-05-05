@@ -1,0 +1,99 @@
+
+
+#### ---------------------------------------------------------------------------
+# Data Load
+#### ---------------------------------------------------------------------------
+
+df <- read.table("DATA\\Aarest_data.txt", header = TRUE)
+# df <- read.table("DATA\\FRT_censord.txt", header = TRUE)
+# df <- read.table("DATA\\LFP.txt", header = TRUE)
+# df <- read.table("DATA\\SerumReversal.txt", header = TRUE)
+
+#### ---------------------------------------------------------------------------
+# Hyper-parameter (set here first)
+#### ---------------------------------------------------------------------------
+maxGEMiter = 1e+6
+nsteps     <- 100
+r_init     <- 0.1
+r_end      <- 1
+bw_init    <- 1e-5
+bw_end     <- 1e-10   # 필요시 조정
+eta        <- 0.1    # adaptive DHEM 전용
+errtol     = 1e-8
+
+#### ---------------------------------------------------------------------------
+# Init-parameter
+#### ---------------------------------------------------------------------------
+K <- 3
+pi_init   <- rep(1 / K, K)
+# beta_init <- c(0.2, 1, 2)   #  c(0.5, 1, 2) ,  c(0.1, 1, 2)     c(0.2, 1, 5)   c(0.5, 1, 5) ,  c(0.1, 1, 5)   
+beta_init <- c(0.5, 1, 5)
+lambda_init <- wmm_lambda_init(df$time,df$event, beta_init,ratio1=0.3,ratio3=0.7)
+theta_init = list(beta=beta_init,pi=pi_init,lambda=lambda_init)
+
+#### ---------------------------------------------------------------------------
+# Train (one run each)
+#### ---------------------------------------------------------------------------
+verbose=TRUE
+# 1) EM (standard EM: r=1, bw=0)  -- wmm_EM은 내부에서 wmm_em_at_r_bw 사용
+fit_EM <- wmm_EM(df,theta=theta_init,maxGEMiter = maxGEMiter,tol=errtol,verbose=verbose)
+print("end EM")
+# 2) DAEM (bw=0, r schedule)
+fit_DAEM <- wmm_DAEM(df,theta=theta_init,maxGEMiter = maxGEMiter,nsteps = nsteps,r_init = r_init,r_end=r_end,tol=errtol,verbose=verbose)
+print("end DAEM")
+# 3) Barrier method (r=1, bw schedule)
+fit_BM <- wmm_BM(df,theta=theta_init,maxGEMiter = maxGEMiter,nsteps=nsteps,bw_init = bw_init,bw_end = bw_end,tol = errtol,verbose=verbose)
+print("end BM")
+# 4) DHEM (r schedule + bw schedule)
+fit_DHEM <- wmm_DHEM(df,theta=theta_init,maxGEMiter = maxGEMiter,nsteps=nsteps,r_init = r_init,r_end=r_end,bw_init = bw_init,bw_end = bw_end,tol = errtol,verbose=verbose)
+print("end DHEM")
+# 5) Adaptive DHEM (r schedule + adaptive bw control)
+fit_adapDHEM <- wmm_DHEM_adaptive(df,theta=theta_init,maxGEMiter = maxGEMiter,nsteps=nsteps,r_init = r_init,r_end=r_end,bw_init = bw_init,eta=eta,tol = errtol,verbose=verbose)
+print("end adapDHEM")
+# fit_adapBM = wmm_BM_adaptive(df,theta=theta_init,maxGEMiter = maxGEMiter,nsteps=nsteps,bw_init = bw_init,bw_end = bw_end,tol = errtol,verbose=verbose)
+# print("end adapBM")
+
+
+
+df_EM <- trace_to_df_EM(fit_EM$trace)
+df_DAEM <- trace_to_df(fit_DAEM,nsteps = nsteps,r_init=r_init, K = 3)
+df_BM <- trace_to_df(fit_BM,nsteps = nsteps,r_init=r_init, K = 3)
+df_DHEM <- trace_to_df(fit_DHEM,nsteps = nsteps,r_init=r_init, K = 3)
+df_adapDHEM <- trace_to_df(fit_adapDHEM,nsteps = nsteps,r_init=r_init, K = 3)
+
+
+######################
+
+
+# 1) 마지막 행만 뽑는 헬퍼
+last_row <- function(df) {
+  df %>% slice(n())
+}
+
+# 2) 공통으로 보고 싶은 컬럼(있으면 선택, 없으면 자동 제외)
+cols_want <- c(
+  paste0("pi", 1:3),
+  paste0("lambda", 1:3),
+  "beta1", "beta3",
+  "dQbeta1", "dQbeta3"
+)
+
+pick_cols <- function(df) {
+  df %>% select(any_of(cols_want))
+}
+
+conv_table <- bind_rows(
+  last_row(df_EM)       %>% pick_cols() %>% mutate(method = "EM"),
+  last_row(df_DAEM)     %>% pick_cols() %>% mutate(method = "DAEM"),
+  last_row(df_BM)       %>% pick_cols() %>% mutate(method = "BM"),
+  last_row(df_DHEM)     %>% pick_cols() %>% mutate(method = "DHEM"),
+  last_row(df_adapDHEM) %>% pick_cols() %>% mutate(method = "adapDHEM")
+) %>%
+  select(method, everything())
+
+conv_table
+
+###############
+
+
+
