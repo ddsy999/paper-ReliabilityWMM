@@ -82,7 +82,7 @@ fit_r1_bwf <- run_fixed_trace(df, theta_init, r = 1,   bw = bw_fixed, maxiter = 
 cat("  iters:", length(fit_r1_bwf$result_latentZ_mat), "\n")
 
 cat("r=0.8, bw=bw_fixed ...\n")
-fit_r08_bwf <- run_fixed_trace(df, theta_init, r = 0.8, bw = bw_fixed, maxiter = maxGEMiter, tol = errtol)
+fit_r08_bwf <- run_fixed_trace(df, theta_init, r = 0.5, bw = bw_fixed, maxiter = maxGEMiter, tol = errtol)
 cat("  iters:", length(fit_r08_bwf$result_latentZ_mat), "\n")
 
 #### ---------------------------------------------------------------------------
@@ -130,7 +130,7 @@ make_column <- function(theta_df, result_latentZ_mat, col_title,
     geom_line(alpha = 0.3) +
     scale_color_gradient(low = "gray25", high = "red", name = "Iteration") +
     geom_hline(yintercept = final_val, linetype = "dashed") +
-    annotate("text", x = n_obs * 0.85, y = final_val,
+    annotate("text", x = n_obs * 0.45, y = final_val,
              label = formatC(final_val, format = "g", digits = 5),
              vjust = -0.5, size = 5) +
     labs(title = expression("Latent variable " * Z[i1]),
@@ -139,6 +139,7 @@ make_column <- function(theta_df, result_latentZ_mat, col_title,
     theme(legend.position = "right",
           plot.title = element_text(hjust = 0.5, size = 18),
           axis.text.x = element_text(size = 14),
+          axis.title.x=element_text(size=15),
           legend.text  = element_text(size = 10),
           legend.title = element_text(size = 12))
 
